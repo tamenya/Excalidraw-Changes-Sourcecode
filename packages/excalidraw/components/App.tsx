@@ -2728,6 +2728,7 @@ class App extends React.Component<AppProps, AppState> {
       this.maybeUnfollowRemoteUser();
     }
 
+    {/*
     if (
       prevState.zoom.value !== this.state.zoom.value ||
       prevState.scrollX !== this.state.scrollX ||
@@ -2744,6 +2745,7 @@ class App extends React.Component<AppProps, AppState> {
         this.state.zoom,
       );
     }
+      */}
 
     if (prevState.userToFollow !== this.state.userToFollow) {
       if (prevState.userToFollow) {
@@ -3796,6 +3798,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   /** use when changing scrollX/scrollY/zoom based on user interaction */
+  
   private translateCanvas: React.Component<any, AppState>["setState"] = (
     state,
   ) => {
@@ -5652,7 +5655,7 @@ class App extends React.Component<AppProps, AppState> {
         y: event.clientY,
       });
     }
-
+    {/* */}
     const initialScale = gesture.initialScale;
     if (
       gesture.pointers.size === 2 &&
@@ -10948,10 +10951,11 @@ class App extends React.Component<AppProps, AppState> {
       if (isPanning) {
         return;
       }
-
+      
       const { deltaX, deltaY } = event;
       // note that event.ctrlKey is necessary to handle pinch zooming
-      if (event.metaKey || event.ctrlKey) {
+     
+       {/* if (event.metaKey || event.ctrlKey) {
         const sign = Math.sign(deltaY);
         const MAX_STEP = ZOOM_STEP * 100;
         const absDelta = Math.abs(deltaY);
@@ -10982,6 +10986,7 @@ class App extends React.Component<AppProps, AppState> {
         this.resetShouldCacheIgnoreZoomDebounced();
         return;
       }
+        */}
 
       // scroll horizontally when shift pressed
       if (event.shiftKey) {
@@ -10993,7 +10998,8 @@ class App extends React.Component<AppProps, AppState> {
       }
 
       this.translateCanvas(({ zoom, scrollX, scrollY }) => ({
-        scrollX: scrollX - deltaX / zoom.value,
+        //Delete the ability to scroll horizontally
+        // scrollX: scrollX - deltaX / zoom.value,
         scrollY: scrollY - deltaY / zoom.value,
       }));
     },
