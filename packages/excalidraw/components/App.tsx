@@ -571,6 +571,8 @@ class App extends React.Component<AppProps, AppState> {
   actionManager: ActionManager;
   device: Device = deviceContextInitialValue;
 
+  private initialScrollY: number | null = null;
+
   private excalidrawContainerRef = React.createRef<HTMLDivElement>();
 
   public scene: Scene;
@@ -2259,7 +2261,7 @@ class App extends React.Component<AppProps, AppState> {
       this.setState((state) => ({
         ...getDefaultAppState(),
         isLoading: opts?.resetLoadingState ? false : state.isLoading,
-        theme: this.state.theme,
+        theme: state.theme,
       }));
       this.resetStore();
       this.resetHistory();
@@ -2364,6 +2366,9 @@ class App extends React.Component<AppProps, AppState> {
     if (isElementLink(window.location.href)) {
       this.scrollToContent(window.location.href, { animate: false });
     }
+
+    // Store initial scroll position after scene is loaded
+    this.initialScrollY = this.state.scrollY;
   };
 
   private isMobileBreakpoint = (width: number, height: number) => {
@@ -10997,11 +11002,24 @@ class App extends React.Component<AppProps, AppState> {
         return;
       }
 
-      this.translateCanvas(({ zoom, scrollX, scrollY }) => ({
-        //Delete the ability to scroll horizontally
-        // scrollX: scrollX - deltaX / zoom.value,
-        scrollY: scrollY - deltaY / zoom.value,
-      }));
+      // Calculate new scrollY with limits
+      this.translateCanvas(({ zoom, scrollX, scrollY }) => {
+        // Calculate the new potential scrollY value
+        const newScrollY = scrollY - deltaY / zoom.value;
+        
+        // Apply limits based on initial position
+        let limitedScrollY = newScrollY;
+        if (this.initialScrollY !== null) {
+          // Prevent scrolling below the initial position
+          if (newScrollY > this.initialScrollY) {
+            limitedScrollY = this.initialScrollY;
+          }
+        }
+        
+        return {
+          scrollY: limitedScrollY,
+        };
+      });
     },
   );
 
